@@ -13,15 +13,9 @@ public class Connection {
 	private Socket socket;
 	private DataInputStream dis;
 	private DataOutputStream dos;
-	private boolean connect;
-
-	public Connection() {
-		connect = false;
-	}
 
 	public boolean connect() {
 		try {
-			connect = true;
 			socket = new Socket("localhost", 9999);
 			this.dis = new DataInputStream(socket.getInputStream());
 			this.dos = new DataOutputStream(socket.getOutputStream());
@@ -34,7 +28,6 @@ public class Connection {
 
 	public boolean disconnect() {
 		try {
-			connect = false;
 			dos.close();
 			dis.close();
 			socket.close();
@@ -86,9 +79,5 @@ public class Connection {
 			e.printStackTrace();
 			return null;
 		} 	
-	}
-	
-	public boolean isConnect(){
-		return connect;
 	}
 }
