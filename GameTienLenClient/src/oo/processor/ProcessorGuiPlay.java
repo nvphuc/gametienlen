@@ -27,36 +27,9 @@ public class ProcessorGuiPlay extends Processor implements Runnable {
 		nhanReady = false;
 		nhanDanhBai = false;
 		nhanBoLuot = false;
-
-		getConnection().sendMessage("name " + getPlayer().username);
 	}
 
-	// khoi tao cac la bai tren tay nguoi choi 1
-	public void initHandCard1() {
-		int x = 240;
-		for (int i = 0; i < 13; i++) {
-			((GuiPlay) gui).handcards1[i] = new TheBai();
-			((GuiPlay) gui).handcards1[i].setBounds(x, 10, 80, 100);
-			((GuiPlay) gui).handcards1[i].x = x;
-			((GuiPlay) gui).handcards1[i].y = 10;
-			((GuiPlay) gui).handcards1[i].width = 80;
-			((GuiPlay) gui).handcards1[i].height = 100;
-			final TheBai tam = ((GuiPlay) gui).handcards1[i];
-			((GuiPlay) gui).handcards1[i].addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					if (tam.isClicked == false) {
-						tam.displayUp();
-					} else {
-						downAll();
-					}
-				}
-			});
-			((GuiPlay) gui).pnHandCard[0].add(((GuiPlay) gui).handcards1[i]);
-			x -= 20;
-		}
-	}
-
+	
 	// bo chon, ha cac quan bai xuong
 	public void downAll() {
 		for (int i = 0; i < ((GuiPlay) gui).handcards1.length; i++) {
@@ -64,95 +37,10 @@ public class ProcessorGuiPlay extends Processor implements Runnable {
 		}
 	}
 
-	// khoi tao cac la bai tren tay nguoi choi 2
-	public void initHandCard2() {
-		int y = 240;
-		for (int i = 0; i < 13; i++) {
-			((GuiPlay) gui).handcards2[i] = new TheBai();
-			((GuiPlay) gui).handcards2[i].setBounds(0, y, 80, 100);
-			((GuiPlay) gui).pnHandCard[1].add(((GuiPlay) gui).handcards2[i]);
-			y -= 20;
-		}
-	}
-
-	// khoi tao cac la bai tren tay nguoi choi 3
-	public void initHandCard3() {
-		int x = 240;
-		for (int i = 0; i < 13; i++) {
-			((GuiPlay) gui).handcards3[i] = new TheBai();
-			((GuiPlay) gui).handcards3[i].setBounds(x, 0, 80, 100);
-			((GuiPlay) gui).pnHandCard[2].add(((GuiPlay) gui).handcards3[i]);
-			x -= 20;
-		}
-	}
-
-	// khoi tao cac la bai tren tay nguoi choi 4
-	public void initHandCard4() {
-		int y = 240;
-		for (int i = 0; i < 13; i++) {
-			((GuiPlay) gui).handcards4[i] = new TheBai();
-			((GuiPlay) gui).handcards4[i].setBounds(0, y, 80, 100);
-			((GuiPlay) gui).pnHandCard[3].add(((GuiPlay) gui).handcards4[i]);
-			y -= 20;
-		}
-	}
-
-	// khoi tao cac la bai nguoi choi 1 dat xuong ban
-	public void initTableCard1() {
-		int x = 240;
-		for (int i = 0; i < 13; i++) {
-			((GuiPlay) gui).tablecards1[12 - i] = new TheBai();
-			((GuiPlay) gui).tablecards1[12 - i].setBounds(x, 0, 80, 100);
-			((GuiPlay) gui).pnTableCard1
-					.add(((GuiPlay) gui).tablecards1[12 - i]);
-			((GuiPlay) gui).pnTableCard1.setBackground(Color.BLACK);
-			x -= 20;
-		}
-	}
-
-	// khoi tao cac la bai nguoi choi 2 dat xuong ban
-	public void initTableCard2() {
-		int y = 0;
-		for (int i = 0; i < 13; i++) {
-			((GuiPlay) gui).tablecards2[12 - i] = new TheBai();
-			((GuiPlay) gui).tablecards2[12 - i].setBounds(0, y, 80, 100);
-			((GuiPlay) gui).pnTableCard2
-					.add(((GuiPlay) gui).tablecards2[12 - i]);
-			((GuiPlay) gui).pnTableCard2.setBackground(Color.BLACK);
-			y += 20;
-		}
-	}
-
-	// khoi tao cac la bai nguoi choi 3 dat xuong ban
-	public void initTableCard3() {
-		int x = 240;
-		for (int i = 0; i < 13; i++) {
-			((GuiPlay) gui).tablecards3[12 - i] = new TheBai();
-			((GuiPlay) gui).tablecards3[12 - i].setBounds(x, 0, 80, 100);
-			((GuiPlay) gui).pnTableCard3
-					.add(((GuiPlay) gui).tablecards3[12 - i]);
-			((GuiPlay) gui).pnTableCard3.setBackground(Color.BLACK);
-			x -= 20;
-		}
-	}
-
-	// khoi tao cac la bai nguoi choi 4 dat xuong ban
-	public void initTableCard4() {
-		int y = 0;
-		for (int i = 0; i < 13; i++) {
-			((GuiPlay) gui).tablecards4[12 - i] = new TheBai();
-			((GuiPlay) gui).tablecards4[12 - i].setBounds(0, y, 80, 100);
-			((GuiPlay) gui).pnTableCard4
-					.add(((GuiPlay) gui).tablecards4[12 - i]);
-			((GuiPlay) gui).pnTableCard4.setBackground(Color.BLACK);
-			y += 20;
-		}
-	}
-
 	// gui message chat
 	public void sendChat() {
 		if (!((GuiPlay) gui).txtChat.getText().equals("")) {
-			String msgChat = "CHAT " + getPlayer().username + ": "
+			String msgChat = "Chat@" + getPlayer().username + ": "
 					+ ((GuiPlay) gui).txtChat.getText();
 			getConnection().sendMessage(msgChat);
 		} else {
@@ -173,13 +61,13 @@ public class ProcessorGuiPlay extends Processor implements Runnable {
 		if (this.nhanReady == true) {
 			this.nhanReady = false;
 			((GuiPlay) gui).btReady.setEnabled(false);
-			getConnection().sendMessage("ready");
+			getConnection().sendMessage("Ready@NONE");
 		}
 	}
 
 	// xu ly nut boluot
 	public void boLuot() {
-		getConnection().sendMessage("anbai " + 1);// sua
+		getConnection().sendMessage("SkipTurn@" + 1);// sua
 		((GuiPlay) gui).btHitCards.setEnabled(false);
 		((GuiPlay) gui).btSkipTurn.setEnabled(false);
 	}
@@ -330,20 +218,20 @@ public class ProcessorGuiPlay extends Processor implements Runnable {
 
 			// phan ra thong diep nhan duoc
 			mes = mes.trim();
-			String[] s = mes.split(":");
+			String[] s = mes.split("@");
 
 			// nhan ten cua nguoi choi
-			if ("name".equals(s[0])) {
+			if ("NamePlayers".equals(s[0])) {
 				displayName(s[1]);
 			}
 
 			// nhan so thu tu cua nguoi choi
-			if ("number".equals(s[0])) {// ok
+			if ("OrderNumber".equals(s[0])) {// ok
 				getPlayer().ordernumber = Integer.parseInt(s[1]);
 			}
 
 			// nhan tin hieu san sang tu server
-			if ("ready".equals(s[0])) {// ok
+			if ("Ready".equals(s[0])) {// ok
 				displyReady(s[1]);
 			}
 
@@ -379,7 +267,7 @@ public class ProcessorGuiPlay extends Processor implements Runnable {
 				displayAnbai();
 			}
 
-			if (strChat.substring(0, 4).equals("CHAT")) {
+			if (strChat.substring(0, 4).equals("Chat")) {
 				((GuiPlay) gui).txtContent.append(strChat.substring(5) + "\n");
 			}
 
@@ -557,7 +445,7 @@ public class ProcessorGuiPlay extends Processor implements Runnable {
 		((GuiPlay) gui).btHitCards.setEnabled(false);
 		for (int i = 0; i < ((GuiPlay) gui).handcards1.length; i++) {
 			if (((GuiPlay) gui).handcards1[i].isClicked == true) {
-				((GuiPlay) gui).handcards1[i].isClicked = false;
+				((GuiPlay) gui).handcards1[i].isClicked = false;//ly do loi
 				((GuiPlay) gui).handcards1[i].setVisible(false);
 				((GuiPlay) gui).handcards1[i].cardnumber = null;
 				((GuiPlay) gui).handcards1[i].setIcon(null);

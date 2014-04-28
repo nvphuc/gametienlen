@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -25,7 +27,7 @@ public class GuiPlay extends Gui {
 
 	// username
 	public JLabel lbUsername[] = new JLabel[4];
-		
+
 	// avartar cua cac player
 	public JButton avatarsPlayer[] = new JButton[4];
 
@@ -61,7 +63,7 @@ public class GuiPlay extends Gui {
 	public TheBai tablecards2[] = new TheBai[13];
 	public TheBai tablecards3[] = new TheBai[13];
 	public TheBai tablecards4[] = new TheBai[13];
-	
+
 	public GuiPlay(Game game, Point location) {
 		super(game, location);
 		setTitle("Play Game");
@@ -71,7 +73,7 @@ public class GuiPlay extends Gui {
 		setGui();
 
 		setVisible(true);
-		
+
 		Thread thread = new Thread((ProcessorGuiPlay) processor);
 		thread.start();
 	}
@@ -114,19 +116,20 @@ public class GuiPlay extends Gui {
 		panelPlay.add(pnHandCard[0]);
 		pnHandCard[0].setLayout(null);
 
-		// khoi tao cac la bai tren tay nguoi choi 1 (khoi tao cac label(labai) hien thi tren panel(pnHandCard1)
-		((ProcessorGuiPlay) processor).initHandCard1();
-		
+		// khoi tao cac la bai tren tay nguoi choi 1 (khoi tao cac label(labai)
+		// hien thi tren panel(pnHandCard1)
+		initHandCard1();
+
 		// panel chua cac quan bai tren tay cua nguoi choi 2
 		pnHandCard[1] = new JPanel();
 		pnHandCard[1].setBounds(1032, 100, 80, 280);
 		pnHandCard[1].setBackground(Color.WHITE);
 		panelPlay.add(pnHandCard[1]);
 		pnHandCard[1].setLayout(null);
-		
+
 		// khoi tao cac la bai tren tay nguoi choi 2
-		((ProcessorGuiPlay) processor).initHandCard2();
-		
+		initHandCard2();
+
 		// panel chua cac quan bai tren tay cua nguoi choi 3
 		pnHandCard[2] = new JPanel();
 		pnHandCard[2].setBounds(380, 8, 280, 100);
@@ -135,8 +138,8 @@ public class GuiPlay extends Gui {
 		pnHandCard[2].setLayout(null);
 
 		// khoi tao cac la bai tren tay nguoi choi 3
-		((ProcessorGuiPlay) processor).initHandCard3();
-		
+		initHandCard3();
+
 		// panel chua cac quan bai tren tay cua nguoi choi 4
 		pnHandCard[3] = new JPanel();
 		pnHandCard[3].setBounds(26, 200, 80, 280);
@@ -145,8 +148,8 @@ public class GuiPlay extends Gui {
 		pnHandCard[3].setLayout(null);
 
 		// khoi tao cac la bai tren tay nguoi choi 4
-		((ProcessorGuiPlay) processor).initHandCard4();
-		
+		initHandCard4();
+
 		// nut danh bai
 		btHitCards = new JButton("Đánh Bài");
 		btHitCards.addActionListener(this);
@@ -248,9 +251,10 @@ public class GuiPlay extends Gui {
 		panelPlay.add(pnTableCard1);
 		pnTableCard1.setLayout(null);
 
-		// khoi tao cac la bai do nguoi choi 1 dat xuong ban (khoi tao cac label(labai) hien thi tren panel(pnTableCard1)
-		((ProcessorGuiPlay) processor).initTableCard1();
-				
+		// khoi tao cac la bai do nguoi choi 1 dat xuong ban (khoi tao cac
+		// label(labai) hien thi tren panel(pnTableCard1)
+		initTableCard1();
+
 		// panel chua quan bai nguoi choi 2 danh ra
 		pnTableCard2 = new JPanel();
 		pnTableCard2.setBounds(922, 100, 100, 350);
@@ -259,8 +263,8 @@ public class GuiPlay extends Gui {
 		pnTableCard2.setLayout(null);
 
 		// khoi tao cac la bai do nguoi choi 2 dat xuong ban
-		((ProcessorGuiPlay) processor).initTableCard2();
-		
+		initTableCard2();
+
 		// panel chua quan bai nguoi choi 3 danh ra
 		pnTableCard3 = new JPanel();
 		pnTableCard3.setBounds(380, 119, 350, 100);
@@ -269,8 +273,8 @@ public class GuiPlay extends Gui {
 		pnTableCard3.setLayout(null);
 
 		// khoi tao cac la bai do nguoi choi 3 dat xuong ban
-		((ProcessorGuiPlay) processor).initTableCard3();
-		
+		initTableCard3();
+
 		// panel chua quan bai nguoi choi 4 danh ra
 		pnTableCard4 = new JPanel();
 		pnTableCard4.setBounds(116, 100, 100, 350);
@@ -279,12 +283,123 @@ public class GuiPlay extends Gui {
 		pnTableCard4.setLayout(null);
 
 		// khoi tao cac la bai do nguoi choi 4 dat xuong ban
-		((ProcessorGuiPlay) processor).initTableCard4();
+		initTableCard4();
+	}
+
+	// khoi tao cac la bai tren tay nguoi choi 1
+	public void initHandCard1() {
+		int x = 240;
+		for (int i = 0; i < 13; i++) {
+			handcards1[i] = new TheBai();
+			handcards1[i].setBounds(x, 10, 80, 100);
+			handcards1[i].x = x;
+			handcards1[i].y = 10;
+			handcards1[i].width = 80;
+			handcards1[i].height = 100;
+			final TheBai tam = handcards1[i];
+			handcards1[i].addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					if (tam.isClicked == false) {
+						tam.displayUp();
+					} else {
+						((ProcessorGuiPlay) processor).downAll();
+					}
+				}
+			});
+			pnHandCard[0].add(handcards1[i]);
+			x -= 20;
+		}
+	}
+
+	// khoi tao cac la bai tren tay nguoi choi 2
+	public void initHandCard2() {
+		int y = 240;
+		for (int i = 0; i < 13; i++) {
+			handcards2[i] = new TheBai();
+			handcards2[i].setBounds(0, y, 80, 100);
+			pnHandCard[1].add(handcards2[i]);
+			y -= 20;
+		}
+	}
+
+	// khoi tao cac la bai tren tay nguoi choi 3
+	public void initHandCard3() {
+		int x = 240;
+		for (int i = 0; i < 13; i++) {
+			handcards3[i] = new TheBai();
+			handcards3[i].setBounds(x, 0, 80, 100);
+			pnHandCard[2].add(handcards3[i]);
+			x -= 20;
+		}
+	}
+
+	// khoi tao cac la bai tren tay nguoi choi 4
+	public void initHandCard4() {
+		int y = 240;
+		for (int i = 0; i < 13; i++) {
+			handcards4[i] = new TheBai();
+			handcards4[i].setBounds(0, y, 80, 100);
+			pnHandCard[3].add(handcards4[i]);
+			y -= 20;
+		}
+	}
+
+	// khoi tao cac la bai nguoi choi 1 dat xuong ban
+	public void initTableCard1() {
+		int x = 240;
+		for (int i = 0; i < 13; i++) {
+			tablecards1[12 - i] = new TheBai();
+			tablecards1[12 - i].setBounds(x, 0, 80, 100);
+			pnTableCard1
+					.add(tablecards1[12 - i]);
+			pnTableCard1.setBackground(Color.BLACK);
+			x -= 20;
+		}
+	}
+
+	// khoi tao cac la bai nguoi choi 2 dat xuong ban
+	public void initTableCard2() {
+		int y = 0;
+		for (int i = 0; i < 13; i++) {
+			tablecards2[12 - i] = new TheBai();
+			tablecards2[12 - i].setBounds(0, y, 80, 100);
+			pnTableCard2
+					.add(tablecards2[12 - i]);
+			pnTableCard2.setBackground(Color.BLACK);
+			y += 20;
+		}
+	}
+
+	// khoi tao cac la bai nguoi choi 3 dat xuong ban
+	public void initTableCard3() {
+		int x = 240;
+		for (int i = 0; i < 13; i++) {
+			tablecards3[12 - i] = new TheBai();
+			tablecards3[12 - i].setBounds(x, 0, 80, 100);
+			pnTableCard3
+					.add(tablecards3[12 - i]);
+			pnTableCard3.setBackground(Color.BLACK);
+			x -= 20;
+		}
+	}
+
+	// khoi tao cac la bai nguoi choi 4 dat xuong ban
+	public void initTableCard4() {
+		int y = 0;
+		for (int i = 0; i < 13; i++) {
+			tablecards4[12 - i] = new TheBai();
+			tablecards4[12 - i].setBounds(0, y, 80, 100);
+			pnTableCard4
+					.add(tablecards4[12 - i]);
+			pnTableCard4.setBackground(Color.BLACK);
+			y += 20;
+		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
+
 		if (e.getSource() == btHitCards) {
 			((ProcessorGuiPlay) processor).danhBai();
 		}
