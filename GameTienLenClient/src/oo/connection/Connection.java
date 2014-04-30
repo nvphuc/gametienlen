@@ -1,6 +1,5 @@
 package oo.connection;
 
-import java.awt.Image;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -8,17 +7,19 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import javax.swing.ImageIcon;
+
 public class Connection {
 
 	private Socket socket;
-	private DataInputStream dis;
-	private DataOutputStream dos;
-
+	ObjectOutputStream oos;
+	ObjectInputStream ois;
+	
 	public boolean connect() {
 		try {
-			socket = new Socket("localhost", 9999);
-			this.dis = new DataInputStream(socket.getInputStream());
-			this.dos = new DataOutputStream(socket.getOutputStream());
+			socket = new Socket("localhost", 8888);
+			oos = new ObjectOutputStream(this.socket.getOutputStream());
+			ois = new ObjectInputStream(this.socket.getInputStream());
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -28,8 +29,8 @@ public class Connection {
 
 	public boolean disconnect() {
 		try {
-			dos.close();
-			dis.close();
+			oos.close();
+			ois.close();
 			socket.close();
 			return true;
 		} catch (IOException e) {
@@ -40,7 +41,7 @@ public class Connection {
 
 	public boolean sendMessage(String message) {
 		try {
-			dos.writeUTF(message);
+			oos.writeObject(message);
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -48,11 +49,9 @@ public class Connection {
 		}
 	}
 
-	public boolean sendImage(Image image) {
-		try {
-			ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+	public boolean sendImage(ImageIcon image) {
+		try {			
 			oos.writeObject(image);
-            oos.flush();
             return true;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -63,17 +62,16 @@ public class Connection {
 	public String receiveMessage() {
 		String message = "";
 		try {
-			message = dis.readUTF();
-		} catch (IOException e) {
+			message = (String) ois.readObject();
+		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}
 		return message;
 	}
 	
-	public Image receiveImage(){		
-		try {
-			ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-			Image image = (Image) ois.readObject(); 
+	public ImageIcon receiveImage(){		
+		try {		
+			ImageIcon image = (ImageIcon) ois.readObject();
 			return image;
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
