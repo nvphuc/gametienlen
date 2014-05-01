@@ -26,9 +26,5 @@ public class TheBai extends JLabel {
 	public void setImage(String cardnumber) {
 		this.cardnumber = cardnumber;
 		this.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage("images\\cards\\" + cardnumber + ".png")));
-		
-		//avatar = Toolkit.getDefaultToolkit().getImage("images\\cell.png");
-		
-		//this.setIcon(new ImageIcon("/images/cards/"+ cardnumber + ".png"));
 	}
 }

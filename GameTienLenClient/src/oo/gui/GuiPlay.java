@@ -64,11 +64,11 @@ public class GuiPlay extends Gui {
 	public TheBai tablecards3[] = new TheBai[13];
 	public TheBai tablecards4[] = new TheBai[13];
 
-	public GuiPlay(Game game, Point location) {
+	public GuiPlay(Game game, Point location, int OrderNumber) {
 		super(game, location);
 		setTitle("Play Game");
 		GuiId = 2;
-		processor = new ProcessorGuiPlay(this);
+		processor = new ProcessorGuiPlay(this, OrderNumber);
 
 		setGui();
 
@@ -283,7 +283,7 @@ public class GuiPlay extends Gui {
 		pnTableCard4.setLayout(null);
 
 		// khoi tao cac la bai do nguoi choi 4 dat xuong ban
-		initTableCard4();
+		initTableCard4();		
 	}
 
 	// khoi tao cac la bai tren tay nguoi choi 1
@@ -401,7 +401,7 @@ public class GuiPlay extends Gui {
 	public void actionPerformed(ActionEvent e) {
 
 		if (e.getSource() == btHitCards) {
-			((ProcessorGuiPlay) processor).danhBai();
+			((ProcessorGuiPlay) processor).hitCards();
 		}
 		if (e.getSource() == btSkipTurn) {
 			((ProcessorGuiPlay) processor).boLuot();

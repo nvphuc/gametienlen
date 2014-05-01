@@ -37,7 +37,6 @@ public class GuiLogin extends Gui {
 
 		lbUsername = new JLabel("User Name");
 		lbUsername.setBounds(0, 0, 100, 50);
-		lbUsername.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage("images\\cards\\" + "12.png")));
 		panel.add(lbUsername);
 
 		lbPassword = new JLabel("Password");

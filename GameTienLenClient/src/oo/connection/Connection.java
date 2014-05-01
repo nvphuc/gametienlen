@@ -1,7 +1,5 @@
 package oo.connection;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -78,4 +76,15 @@ public class Connection {
 			return null;
 		} 	
 	}
+	
+	public InforRoom receiveInforRoom(){		
+		try {		
+			InforRoom infor = (InforRoom) ois.readObject();
+			return infor;
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		} 	
+	}
+	
 }

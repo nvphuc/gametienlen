@@ -17,12 +17,23 @@ public class ProcessorGuiWaitRoom extends Processor {
 	}
 
 	/* Ham xu ly nut tao phong */
-	public void createRoom(String RoomName) {
+	public void createRoom() {
+		String RoomName = "";
+		RoomName = JOptionPane.showInputDialog(gui,"Nhập tên phòng muốn tạo:","Inform",JOptionPane.INFORMATION_MESSAGE);
+		while(RoomName.equals("") || RoomName.length() > 10) {
+			RoomName = JOptionPane.showInputDialog(gui,"Nhập tên phòng muốn tạo (Tối đa 10 ký tự):","Inform",JOptionPane.INFORMATION_MESSAGE);
+		}
+		
+		int MaxPlayer = 0;
+		MaxPlayer = Integer.parseInt(JOptionPane.showInputDialog(gui,"Số người chơi trong phòng:","Inform",JOptionPane.INFORMATION_MESSAGE));
+		while(MaxPlayer < 2 || MaxPlayer > 4) {
+			MaxPlayer = Integer.parseInt(JOptionPane.showInputDialog(gui,"Số người chơi trong phòng (Từ 2 đến 4):","Inform",JOptionPane.INFORMATION_MESSAGE));
+		}
 		
 		/* Gui message tao phong len server 
-		 * Cau truc message: "CreateRoom@TenPhong"
+		 * Cau truc message: "CreateRoom@TenPhong:songuoichoi"
 		 */
-		getConnection().sendMessage("CreateRoom@" + RoomName);
+		getConnection().sendMessage("CreateRoom@" + RoomName + ":" + MaxPlayer);
 		
 		/* Nhan message tu server 
 		 * Cau truc message:
@@ -32,10 +43,10 @@ public class ProcessorGuiWaitRoom extends Processor {
 		String message = getConnection().receiveMessage();
 		
 		/* Xu ly message */
-		if(message.equals("OK")){
-			new GuiPlay(getGame(), getGuiLocation());
+		String[] data = message.split("@");
+		if(data[0].equals("OK")){
+			new GuiPlay(getGame(), getGuiLocation(), Integer.parseInt(data[1]));
 			((GuiWaitRoom) gui).dispose();
-			//refreshRooms();
 		}
 		else{
 			JOptionPane.showMessageDialog(getGui(),
@@ -125,17 +136,16 @@ public class ProcessorGuiWaitRoom extends Processor {
 					String message = getConnection().receiveMessage();
 					
 					/* Xu ly message nhan duoc */
-					if(message.equals("OK")) {
-						new GuiPlay(getGame(), getGuiLocation());
+					String[] data = message.split("@");
+					if(data[0].equals("OK")){
+						new GuiPlay(getGame(), getGuiLocation(), Integer.parseInt(data[1]));
 						((GuiWaitRoom) gui).dispose();
 					}
 					else {
 						JOptionPane.showMessageDialog(getGui(),
 								"Loi, Khong vao phong duoc", "Error",
 								JOptionPane.ERROR_MESSAGE);
-					}
-					
-					
+					}				
 				}
 			});
 			
@@ -153,7 +163,5 @@ public class ProcessorGuiWaitRoom extends Processor {
 		
 		/* Repaint lai pnRooms */
 		((GuiWaitRoom) gui).pnRooms.repaint();
-
 	}
-
 }

@@ -7,11 +7,8 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
-
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import oo.gui.element.Room;
@@ -41,7 +38,7 @@ public class GuiWaitRoom extends Gui {
 		
 		pnPlayer = new JPanel(new FlowLayout());
 		
-		lbAvatar = new JLabel(new ImageIcon(processor.getPlayer().avatar));
+		lbAvatar = new JLabel(processor.getPlayer().avatar);
 		pnPlayer.add(lbAvatar);
 		
 		lbUsername = new JLabel(processor.getPlayer().username);
@@ -65,10 +62,8 @@ public class GuiWaitRoom extends Gui {
 	
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		String RoomName = JOptionPane.showInputDialog(this,"Nhập tên phòng muốn tạo:","Inform",JOptionPane.INFORMATION_MESSAGE);	
-		((ProcessorGuiWaitRoom) processor).createRoom(RoomName);
-		
+	public void actionPerformed(ActionEvent e) {	
+		((ProcessorGuiWaitRoom) processor).createRoom();	
 	}
 
 }

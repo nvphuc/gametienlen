@@ -23,8 +23,7 @@ public class ProcessorGuiLogin extends Processor {
 			/* Tao message gui username va pass len server 
 			 * Cau truc message "Login@USERNAME:PASSWORD" 
 			 */
-			String message = "Login@" + ((GuiLogin) gui).tfUsername.getText()
-					+ ":" + ((GuiLogin) gui).tfPassword.getText();
+			String message = "Login@" + ((GuiLogin) gui).tfUsername.getText() + ":" + ((GuiLogin) gui).tfPassword.getText();
 
 			/* Gui message len server */
 			getConnection().sendMessage(message);
@@ -47,7 +46,7 @@ public class ProcessorGuiLogin extends Processor {
 				getPlayer().username = ((GuiLogin) gui).tfUsername.getText();
 				
 				/* Nhan avatar tu server luu vao avatar cua player */
-				//getPlayer().avatar = getConnection().receiveImage();
+				getPlayer().avatar = getConnection().receiveImage();
 				
 				/* Mo giao dien WaitRoom va dong giao dien hien tai lai */		
 				new GuiWaitRoom(((GuiLogin) gui).getGame(), getGuiLocation());	// Mo giao dien WaitRoom
