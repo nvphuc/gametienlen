@@ -404,7 +404,7 @@ public class GuiPlay extends Gui {
 			((ProcessorGuiPlay) processor).hitCards();
 		}
 		if (e.getSource() == btSkipTurn) {
-			((ProcessorGuiPlay) processor).boLuot();
+			((ProcessorGuiPlay) processor).skipTurn();
 		}
 		if (e.getSource() == btReady) {
 			((ProcessorGuiPlay) processor).ready();

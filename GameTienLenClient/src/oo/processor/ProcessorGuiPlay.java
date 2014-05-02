@@ -67,20 +67,29 @@ public class ProcessorGuiPlay extends Processor implements Runnable {
 				showCards(s[1]);
 			}
 
-			// nhan tin hieu danh bai
-			if ("danhbai".equals(s[0])) {// ok
-				((GuiPlay) gui).btHitCards.setEnabled(true);
+			if ("NewTurn".equals(s[0])) {// ok
+				clearTableCards();
+				if(Integer.parseInt(s[1]) == OrderNumber)
+					((GuiPlay) gui).btHitCards.setEnabled(true);
+				
 			}
 
 			// nhan quan bai rac
-			if ("rac".equals(s[0])) {// ok
-				displayRac(s[1]);
+			if ("HitCards".equals(s[0])) {// ok
+				showHitCards(s[1]);
+			}
+			
+			if ("ResultHitCards".equals(s[0])) {// ok
+				if (!s[1].equals("OK")) {
+					JOptionPane.showMessageDialog(gui, "Bạn không thể đánh",
+							"Lỗi đánh bài", JOptionPane.INFORMATION_MESSAGE);
+				}
 			}
 
 			// neu nhan tin hieu boc bai
-			if ("bocbai".equals(s[0])) {// ok
-				// ((ProcessorGuiPlay) gui).gameGui.btnBocBai.setEnabled(true);
-				nextTurn();
+			if ("Turn".equals(s[0])) {// ok
+				((GuiPlay) gui).btHitCards.setEnabled(true);
+				((GuiPlay) gui).btSkipTurn.setEnabled(true);
 			}
 
 			// nhan tin hieu chuan bi
@@ -88,29 +97,36 @@ public class ProcessorGuiPlay extends Processor implements Runnable {
 				resetAll();
 			}
 
-			// nhan tin hieu an bai
-			if ("anbai".equals(s[0])) {// ok
-				displayAnbai();
-			}
-
-			if (strChat.substring(0, 4).equals("Chat")) {
+			if ("Chat".equals(s[0])) {
 				((GuiPlay) gui).txtContent.append(strChat.substring(5) + "\n");
 			}
 
-			if ("tatboluoc".equals(s[0])) {
-				((GuiPlay) gui).btSkipTurn.setEnabled(false);
-			}
-
-			if ("tatsauboluoc".equals(s[0])) {// ok
-				tatDanhSauBoLuot();
-			}
-			if ("winbai".equals(s[0])) {// ok
-				winBai();
-			}
-			if ("losebai".equals(s[0])) {// ok
-				loseBai();
+			if ("Over".equals(s[0])) {// ok
+				showOver(s[0]);
 			}
 		}
+	}
+
+	public void winBai() {
+		JOptionPane.showMessageDialog(gui,
+				"Bạn đã chiến thắng ở ván này...", "Thông Báo",
+				JOptionPane.ERROR_MESSAGE);
+		for (int i = 0; i < ((GuiPlay) gui).handcards1.length; i++) {
+			((GuiPlay) gui).handcards1[i].setVisible(true);
+		}
+		downAll();
+	}
+	
+	private void showOver(String s) {
+		String[] data = s.split(":");
+		
+		if ((4 + Integer.parseInt(data[0]) - OrderNumber) % 4 == 0) {
+			((GuiPlay) gui).lbMessage[0].setText("Về thứ " + Integer.parseInt(data[1]));
+			JOptionPane.showMessageDialog(gui,
+					"Về thứ " + Integer.parseInt(data[1]), "Thông Báo",
+					JOptionPane.INFORMATION_MESSAGE);
+		}
+		((GuiPlay) gui).lbMessage[(4 + Integer.parseInt(data[0]) - OrderNumber) % 4].setText("Về thứ " + Integer.parseInt(data[1]));	
 	}
 
 	private void displayRoom(InforRoom inforRoom) {
@@ -162,16 +178,16 @@ public class ProcessorGuiPlay extends Processor implements Runnable {
 	}
 
 	// xu ly nut boluot
-	public void boLuot() {
-		getConnection().sendMessage("SkipTurn@" + 1);
-		System.out.println("send: SkipTurn@" + 1);
+	public void skipTurn() {
+		getConnection().sendMessage("SkipTurn@NONE");
 		((GuiPlay) gui).btHitCards.setEnabled(false);
 		((GuiPlay) gui).btSkipTurn.setEnabled(false);
 	}
 
 	public void hitCards() {
 		String cards = "";
-		// lấy danh sách các lá bài đã chọn
+		// lấy danh sách các lá bài đã chọn: "bai1_bai2_..._bain"
+
 		for (int i = 0; i < ((GuiPlay) gui).handcards1.length; i++) {
 			if (((GuiPlay) gui).handcards1[i].isClicked == true) {
 				this.pressHitCard = true;
@@ -181,66 +197,13 @@ public class ProcessorGuiPlay extends Processor implements Runnable {
 				cards += ((GuiPlay) gui).handcards1[i].cardnumber;
 			}
 		}
-		
-		if (this.AssaulterCards == null || this.AssaulterCards.length == 0) {
-			if (!cards.equals("") && 
-				!checkBaiDanh(parseCards(cards)).equals("loi")) {
-				getConnection().sendMessage(
-						"sobaidanh@" + parseCards(cards).length);
-				getConnection().sendMessage("danhbai@" + cards);
-				return;
-			} else {
-				Object[] options = { "OK" };
-				int option = JOptionPane.showOptionDialog(gui, "Lỗi Đánh Bài!",
-						"Thông Báo!", JOptionPane.DEFAULT_OPTION,
-						JOptionPane.WARNING_MESSAGE, null, options, options[0]);
-				if (option == 0) {
-					return;
-				}
-			}
-		}
-		
-		if (parseCards(cards).length != this.AssaulterCards.length) {
-			if (this.AssaulterCards.length == 1) {
-				if (Integer.parseInt(this.AssaulterCards[0]) / 4 == 13
-						&& checkBaiDanh(parseCards(cards)).equals("tuquy")) {
-					getConnection().sendMessage(
-							"sobaidanh " + parseCards(cards).length);
-					System.out.println("send: sobaidanh "
-							+ parseCards(cards).length);
-					getConnection().sendMessage("danhbai@" + cards);
-				}
-			} else {
-				Object[] options = { "OK" };
-				int option = JOptionPane.showOptionDialog(gui, "Lỗi Đánh Bài!",
-						"Thông Báo!", JOptionPane.DEFAULT_OPTION,
-						JOptionPane.WARNING_MESSAGE, null, options, options[0]);
-				if (option == 0) {
-					return;
-				}
-			}
 
-		} else {
-			if (Integer.parseInt(parseCards(cards)[0]) < Integer
-					.parseInt(this.AssaulterCards[0])
-					|| !checkBaiDanh(parseCards(cards)).equals(
-							checkBaiDanh(this.AssaulterCards))) {
-				Object[] options = { "OK" };
-				int option = JOptionPane.showOptionDialog(gui, "Lỗi Đánh Bài!",
-						"Thông Báo!", JOptionPane.DEFAULT_OPTION,
-						JOptionPane.WARNING_MESSAGE, null, options, options[0]);
-				if (option == 0) {
-					return;
-				}
-			} else if (!cards.equals("")) {
-				getConnection().sendMessage(
-						"sobaidanh " + parseCards(cards).length);
-				System.out.println("send: sobaidanh "
-						+ parseCards(cards).length);
-				getConnection().sendMessage("danhbai@" + cards);
-			}
+		if (cards.equals("")) {
+			JOptionPane.showMessageDialog(gui, "Hãy chọn bài", "Lỗi đánh bài",
+					JOptionPane.INFORMATION_MESSAGE);
+			return;
 		}
-		((GuiPlay) gui).btSkipTurn.setEnabled(false);
+		getConnection().sendMessage("HitCards@" + cards);
 	}
 
 	// chuyen doi thanh cac chuoi bai
@@ -249,77 +212,18 @@ public class ProcessorGuiPlay extends Processor implements Runnable {
 		return cards.split("_");
 	}
 
-	// kiem tra cac la bai chon danh xuong thuoc loai nao: le, doi, sanh; co hop
-	// le ko
-	public String checkBaiDanh(String[] cards) {
-		if (cards.length == 1) {
-			return "rac";
-		} else if (cards.length == 2) {
-			if (Integer.parseInt(cards[0]) / 4 == Integer.parseInt(cards[1]) / 4) {
-				return "doi";
-			} else {
-				return "loi";
-			}
-		} else if (cards.length == 3) {
-			for (int i = 0; i < 3; i++) {
-				if (Integer.parseInt(cards[i]) / 4 != (Integer
-						.parseInt(cards[0]) / 4) - i) {
-					for (int j = 0; j < 3; j++) {
-						if (Integer.parseInt(cards[j]) / 4 != (Integer
-								.parseInt(cards[0]) / 4)) {
-							return "loi";
-						}
-					}
-					return "sam";
-				}
-			}
-			if (Integer.parseInt(cards[0]) / 4 == 13) {
-				return "loi";
-			}
-			return "sanh3";
-		} else if (cards.length == 4) {
-			for (int i = 0; i < 4; i++) {
-				if (Integer.parseInt(cards[i]) / 4 != (Integer
-						.parseInt(cards[0]) / 4) - i) {
-					for (int j = 0; j < 4; j++) {
-						if (Integer.parseInt(cards[j]) / 4 != (Integer
-								.parseInt(cards[0]) / 4)) {
-							return "loi";
-						}
-					}
-					return "tuquy";
-				}
-			}
-			if (Integer.parseInt(cards[0]) / 4 == 13) {
-				return "loi";
-			}
-			return "sanh4";
-		} else if (cards.length > 4) {
-			for (int i = 0; i < cards.length; i++) {
-				if (Integer.parseInt(cards[i]) / 4 != (Integer
-						.parseInt(cards[0]) / 4) - i) {
-					return "loi";
-				}
-			}
-			if (Integer.parseInt(cards[0]) / 4 == 13) {
-				return "loi";
-			}
-			return "sanh";
-		}
-		return "sai";
-	}
-
 	// hien thi cac nguoi choi san sang
 	public void displyReady(String mes) {
-		mes = mes.trim();	
+		mes = mes.trim();
 		String[] listReady = mes.split(" ");
-		
+
 		boolean allReady = true;
 
 		// hien thi ten nguoi choi len giao dien
 		for (int i = 0; i < maxPlayer; i++) {
 			if (listReady[i].equals("true")) {
-				((GuiPlay) gui).lbMessage[(maxPlayer + i - OrderNumber) % maxPlayer].setText("Sẵn Sàng");
+				((GuiPlay) gui).lbMessage[(maxPlayer + i - OrderNumber)
+						% maxPlayer].setText("Sẵn Sàng");
 			} else {
 				allReady = false;
 			}
@@ -331,20 +235,6 @@ public class ProcessorGuiPlay extends Processor implements Runnable {
 				((GuiPlay) gui).lbMessage[i].setText("");
 			}
 		}
-	}
-
-	public String[] dichMang(String[] s, int danhdau) {
-		String name[] = new String[4];
-
-		// sap xep lai thu tu cac nguoi choi de hien thi len giao dien
-		for (int i = danhdau; i < s.length; i++) {
-			name[i - danhdau] = s[i];
-		}
-		for (int i = 0; i <= danhdau - 1; i++) {
-			name[i - danhdau + 4] = s[i];
-		}
-
-		return name;
 	}
 
 	public String[] sortCards(String[] cards) {
@@ -363,8 +253,7 @@ public class ProcessorGuiPlay extends Processor implements Runnable {
 
 	// hien tung quan bai cua nguoi choi luc moi chia
 	public void showCards(String mes) {
-		mes = mes.trim();
-		String[] cards = mes.split(" ");
+		String[] cards = parseCards(mes);
 		sortCards(cards);
 		for (int i = 0; i < 13; i++) {
 			((GuiPlay) gui).handcards1[i].cardnumber = cards[i];
@@ -376,135 +265,93 @@ public class ProcessorGuiPlay extends Processor implements Runnable {
 	}
 
 	// hien thi quan bai rac
-	public void displayRac(String mes) {
-		mes = mes.trim();
+	public void showHitCards(String mes) {
 
-		// neu quan bai nhan dc bi cam thi khong lam j ca
-		if ("cam".equals(mes)) {
-			return;
-		}
+		String[] data = mes.split(":");
+		// don het cac quan bai da danh xuong cua nguoi choi truoc do
+		clearTableCards();
 
-		// neu quan bai rac duoc phep danh ra
-		this.pressHitCard = false;
-		((GuiPlay) gui).btHitCards.setEnabled(false);
-		for (int i = 0; i < ((GuiPlay) gui).handcards1.length; i++) {
-			if (((GuiPlay) gui).handcards1[i].isClicked == true) {
-				((GuiPlay) gui).handcards1[i].isClicked = false;// ly do loi
-				((GuiPlay) gui).handcards1[i].setVisible(false);
-				((GuiPlay) gui).handcards1[i].cardnumber = null;
-				((GuiPlay) gui).handcards1[i].setIcon(null);
-			}
-		}
+		switch ((4 + Integer.parseInt(data[0]) - OrderNumber) % 4) {
 
-		String[] s = mes.split(":");
-		for (int i = 0; i < 4; i++) {
-			if (s[0].equals(this.PlayersNames[i])) {
-				switch (i) {
-				case 0:
-					hienRac1(s[1]);
-					break;
-				case 1:
-					hienRac2(s[1]);
-					break;
-				case 2:
-					hienRac3(s[1]);
-					break;
-				case 3:
-					hienRac4(s[1]);
-					break;
+		case 0:
+			// khong hien thi cac quan bai da chon tren tay nguoi choi
+			for (int i = 0; i < ((GuiPlay) gui).handcards1.length; i++) {
+				if (((GuiPlay) gui).handcards1[i].isClicked == true) {
+					((GuiPlay) gui).handcards1[i].isClicked = false;
+					((GuiPlay) gui).handcards1[i].setVisible(false);
+					((GuiPlay) gui).handcards1[i].cardnumber = null;
+					((GuiPlay) gui).handcards1[i].setIcon(null);
 				}
-				break;
 			}
+			showTableCards(0, data[1]);
+			break;
+
+		case 1:
+			showTableCards(1, data[1]);
+			break;
+
+		case 2:
+			showTableCards(2, data[1]);
+			break;
+
+		case 3:
+			showTableCards(3, data[1]);
+			break;
 		}
+		
+		((GuiPlay) gui).btHitCards.setEnabled(false);
+		((GuiPlay) gui).btSkipTurn.setEnabled(false);
 	}
 
-	// hien thi bai rac cua nguoi choi hien tai
-	public void hienRac1(String rac) {
-		xoaRac1();
-		String[] listRac = parseCards(rac);
-		this.AssaulterCards = listRac;
-		if (this.AssaulterCards == null || this.AssaulterCards.length == 0)
-			return;
-		for (int i = 0; i < 13; i++) {
-			if (((GuiPlay) gui).tablecards1[i].getIcon() == null
-					&& i < listRac.length) {
-				((GuiPlay) gui).tablecards1[i].setImage(listRac[i]);
-			}
-		}
-	}
-
-	// xoa rac trong lan tiep theo cua nguoi choi 1
-	public void xoaRac1() {
+	private void clearTableCards() {
 		for (int i = 0; i < 13; i++) {
 			((GuiPlay) gui).tablecards1[i].setIcon(null);
-		}
-	}
-
-	// hien thi bai rac cua nguoi choi 2
-	public void hienRac2(String rac) {
-		xoaRac2();
-		String[] listRac = parseCards(rac);
-		this.AssaulterCards = listRac;
-		if (this.AssaulterCards == null || this.AssaulterCards.length == 0)
-			return;
-		for (int i = 0; i < 13; i++) {
-			if (((GuiPlay) gui).tablecards2[i].getIcon() == null
-					&& i < listRac.length) {
-				((GuiPlay) gui).tablecards2[i].setImage(listRac[i]);
-			}
-		}
-	}
-
-	public void xoaRac2() {
-		for (int i = 0; i < 13; i++) {
 			((GuiPlay) gui).tablecards2[i].setIcon(null);
-		}
-	}
-
-	// hien thi bai rac cua nguoi choi 3
-	public void hienRac3(String rac) {
-		xoaRac3();
-		String[] listRac = parseCards(rac);
-		this.AssaulterCards = listRac;
-		if (this.AssaulterCards == null || this.AssaulterCards.length == 0)
-			return;
-		for (int i = 0; i < 13; i++) {
-			if (((GuiPlay) gui).tablecards3[i].getIcon() == null
-					&& i < listRac.length) {
-				((GuiPlay) gui).tablecards3[i].setImage(listRac[i]);
-			}
-		}
-	}
-
-	public void xoaRac3() {
-		for (int i = 0; i < 13; i++) {
 			((GuiPlay) gui).tablecards3[i].setIcon(null);
-		}
-	}
-
-	// hien thi bai rac cua nguoi choi 4
-	public void hienRac4(String rac) {
-		xoaRac4();
-		String[] listRac = parseCards(rac);
-		this.AssaulterCards = listRac;
-		if (this.AssaulterCards == null || this.AssaulterCards.length == 0)
-			return;
-		for (int i = 0; i < 13; i++) {
-			if (((GuiPlay) gui).tablecards4[i].getIcon() == null
-					&& i < listRac.length) {
-				((GuiPlay) gui).tablecards4[i].setImage(listRac[i]);
-			}
-		}
-	}
-
-	public void xoaRac4() {
-		for (int i = 0; i < 13; i++) {
 			((GuiPlay) gui).tablecards4[i].setIcon(null);
 		}
 	}
 
-	public void nextTurn() {
-		((GuiPlay) gui).btHitCards.setEnabled(true);
+	private void showTableCards(int location, String listCards) {
+		String[] cards = parseCards(listCards);
+		
+		switch(location) {
+		case 0:
+			for (int i = 0; i < 13; i++) {
+				if (((GuiPlay) gui).tablecards1[i].getIcon() == null
+						&& i < cards.length) {
+					((GuiPlay) gui).tablecards1[i].setImage(cards[i]);
+				}
+			}
+			break;
+		
+		case 1:
+			for (int i = 0; i < 13; i++) {
+				if (((GuiPlay) gui).tablecards2[i].getIcon() == null
+						&& i < cards.length) {
+					((GuiPlay) gui).tablecards2[i].setImage(cards[i]);
+				}
+			}
+			break;
+			
+		case 2:
+			for (int i = 0; i < 13; i++) {
+				if (((GuiPlay) gui).tablecards3[i].getIcon() == null
+						&& i < cards.length) {
+					((GuiPlay) gui).tablecards3[i].setImage(cards[i]);
+				}
+			}
+			break;
+			
+		case 3:
+			for (int i = 0; i < 13; i++) {
+				if (((GuiPlay) gui).tablecards4[i].getIcon() == null
+						&& i < cards.length) {
+					((GuiPlay) gui).tablecards4[i].setImage(cards[i]);
+				}
+			}
+			break;
+		}	
 	}
 
 	// reset cac bien giao dien
@@ -533,35 +380,6 @@ public class ProcessorGuiPlay extends Processor implements Runnable {
 			((GuiPlay) gui).tablecards4[i].setIcon(null);
 		}
 
-	}
-
-	// hien thi nut an bai
-	public void displayAnbai() {
-		((GuiPlay) gui).btSkipTurn.setEnabled(true);
-	}
-
-	public void tatDanhSauBoLuot() {
-		((GuiPlay) gui).btHitCards.setEnabled(false);
-		((GuiPlay) gui).btSkipTurn.setEnabled(false);
-	}
-
-	public void winBai() {
-		JOptionPane.showMessageDialog(gui,
-				"Bạn đã chiến thắng ở ván này...", "Thông Báo",
-				JOptionPane.ERROR_MESSAGE);
-		for (int i = 0; i < ((GuiPlay) gui).handcards1.length; i++) {
-			((GuiPlay) gui).handcards1[i].setVisible(true);
-		}
-		downAll();
-	}
-
-	public void loseBai() {
-		JOptionPane.showMessageDialog(gui, "Bạn đã thua ván này...",
-				"Thông Báo", JOptionPane.ERROR_MESSAGE);
-		for (int i = 0; i < ((GuiPlay) gui).handcards1.length; i++) {
-			((GuiPlay) gui).handcards1[i].setVisible(true);
-		}
-		downAll();
 	}
 
 }
