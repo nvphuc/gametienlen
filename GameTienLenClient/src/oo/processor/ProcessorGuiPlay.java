@@ -102,7 +102,7 @@ public class ProcessorGuiPlay extends Processor implements Runnable {
 			}
 
 			if ("Over".equals(s[0])) {// ok
-				showOver(s[0]);
+				showOver(s[1]);
 			}
 		}
 	}
@@ -121,7 +121,6 @@ public class ProcessorGuiPlay extends Processor implements Runnable {
 		String[] data = s.split(":");
 		
 		if ((4 + Integer.parseInt(data[0]) - OrderNumber) % 4 == 0) {
-			((GuiPlay) gui).lbMessage[0].setText("Về thứ " + Integer.parseInt(data[1]));
 			JOptionPane.showMessageDialog(gui,
 					"Về thứ " + Integer.parseInt(data[1]), "Thông Báo",
 					JOptionPane.INFORMATION_MESSAGE);
