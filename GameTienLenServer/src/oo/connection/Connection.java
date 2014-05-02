@@ -42,6 +42,16 @@ public class Connection {
 			return false;
 		}
 	}
+	
+	public boolean sendInforRoom(InforRoom infor) {
+		try {
+			oos.writeObject(infor);
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 
 	public String receiveMessage() {
 		String message = "";

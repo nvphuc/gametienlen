@@ -1,6 +1,5 @@
 package com.them;
 
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,6 +8,8 @@ import java.net.Socket;
 public class ThreadPlayer extends Thread {
 	Server server;
 	ThreadRoom room;
+
+	// 01 - gop name + nameplayer -> UserName (Player)
 	String name;
 	String nameplayer = "";// p2
 
@@ -17,21 +18,41 @@ public class ThreadPlayer extends Thread {
 	public DataInputStream dis;
 	public DataOutputStream dos;
 
-	// =======================================them
-	boolean ready = false; // danh dau nguoi choi nay da san sang
-	boolean isDanhbai = false, isBocbai = false, isAnbai = false;
-	int sobairac = 0; // luu so luong bai rac da danh
-	int quanbairac; // luu quan bai rac vua dc danh ra
-	int kophom[] = new int[10];
-	int pocker[] = new int[13]; // chua cac quan bai se dc gui ve client
-	int phom[] = new int[10];
-	int matranbai[][] = new int[13][4]; // chua ma tran bai cua nguoi choi de
+	// =======================================
+
+	// 06 - thu xoa isBocbai
+	// boolean isBocbai = false;
+
+	// 03 - thu xoa sobairac, quanbairac | kq ok
+	// int sobairac = 0; // luu so luong bai rac da danh
+	// int quanbairac; // luu quan bai rac vua dc danh ra
+
+	// 04 - thu xoa | kq ok
+	// int kophom[] = new int[10];
+
+	// 05 - thu xoa phom | kq ok
+	// int phom[] = new int[10];
+
+	// 07 - thu xoa matranbai ktmatran
+	// int matranbai[][] = new int[13][4]; // chua ma tran bai cua nguoi choi de
 	// tinh phom
-	boolean ktmatran[] = new boolean[13]; // danh dau cac dong cam cua matranbai
+	// boolean ktmatran[] = new boolean[13]; // danh dau cac dong cam cua
+	// matranbai
+
+	// ===================================================================================
+	// 02 - chuyen thanh isDanhbai -> isHitCards, isAnbai -> isSkipTurn, ready
+	// -> isReady (pro)
+	boolean isDanhbai = false, isAnbai = false;
+	boolean ready = false; // danh dau nguoi choi nay da san sang
+
+	// 08 - chuyen thanh ordernumber -> OrderNumber
+	int ordernumber;
+	int pocker[] = new int[13]; // chua cac quan bai se dc gui ve client
+
+	// 10 - chuyen thanh mangboluoc -> ListSkipTurn
 	static int mangboluoc[] = { 0, 0, 0, 0 };
 	int slbaidanh = 0;
 	boolean win = false; // bao nguoi choi nay da thang vong choi
-	int ordernumber;
 
 	public ThreadPlayer(Server server, Socket socket) {
 		this.server = server;
@@ -46,15 +67,15 @@ public class ThreadPlayer extends Thread {
 	public void run() {
 		try {
 			String mes = "";
-			//String cmd = "";
-			//String msg = "";
+			// String cmd = "";
+			// String msg = "";
 			while (true) {
 				mes = dis.readUTF();
-				//cmd = mes.substring(0, mes.indexOf("@"));
-				//msg = mes.substring(mes.indexOf("@") + 1);
-				
+				// cmd = mes.substring(0, mes.indexOf("@"));
+				// msg = mes.substring(mes.indexOf("@") + 1);
+
 				String[] mesdata = mes.split("@");
-				
+
 				switch (mesdata[0]) {
 
 				case "Login":
@@ -145,7 +166,7 @@ public class ThreadPlayer extends Thread {
 				if (mang[0].equals("sobaidanh")) {
 					room.players.get(ordernumber).slbaidanh += Integer
 							.parseInt(mang[1]);
-					System.out.print("so bai danh la: "
+					System.out.println("so bai danh la: "
 							+ Integer.parseInt(mang[1]));
 				}
 
@@ -153,9 +174,8 @@ public class ThreadPlayer extends Thread {
 					mangboluoc[ordernumber] = Integer.parseInt(mang[1]);
 					for (int i = 0; i < 4; i++)
 						System.out.print(mangboluoc[i]);
+					// 09 - chuyen thanh sendAnbai -> sendSkipTurn
 					sendAnbai();
-					// khi boc an thi ko the boc bai
-					this.isBocbai = true;
 				}
 			}
 		} catch (IOException e) {
@@ -200,14 +220,16 @@ public class ThreadPlayer extends Thread {
 	public void resetAll() {
 		ready = false;
 		isDanhbai = false;
-		isBocbai = false;
+		// 06
+		// isBocbai = false;
 		isAnbai = false;
-		sobairac = 0;
-		quanbairac = 0;
+		// sobairac = 0;
+		// quanbairac = 0;
 		room.soReady = 0;
 		room.soHaphom = 0;
 		resetMang();
-		resetMatranbai();
+		// 07
+		// resetMatranbai();
 		resetboluoc();
 		slbaidanh = 0;
 	}
@@ -216,20 +238,18 @@ public class ThreadPlayer extends Thread {
 	public void resetMang() {
 		for (int i = 0; i < 10; i++) {
 			pocker[i] = 0;
-			phom[i] = 0;
-			kophom[i] = 0;
+			// phom[i] = 0;
+			// kophom[i] = 0;
 		}
 	}
 
 	// reset matranbai
-	public void resetMatranbai() {
-		for (int i = 0; i < 13; i++) {
-			for (int j = 0; j < 4; j++) {
-				this.matranbai[i][j] = 0;
-			}
-			this.ktmatran[i] = false;
-		}
-	}
+	// 07
+	/*
+	 * public void resetMatranbai() { for (int i = 0; i < 13; i++) { for (int j
+	 * = 0; j < 4; j++) { this.matranbai[i][j] = 0; } this.ktmatran[i] = false;
+	 * } }
+	 */
 
 	public void resetboluoc() {
 		for (int i = 0; i < 4; i++) {
@@ -364,25 +384,29 @@ public class ThreadPlayer extends Thread {
 	}
 
 	// xu ly an bai vaf gui quan bai an ve cho client
+	// 09 - chuyen thanh sendAnbai -> sendSkipTurn
 	public void sendAnbai() throws IOException {
 		// Server.player[this.ordernumber%3].dos.writeUTF("tatboluoc");
 		int dem = 0;
 		for (int i = 0; i < 4; i++) {
 			if (mangboluoc[i] == 1)
-				room.players.get(i).dos.writeUTF("tatsauboluoc");
+				room.players.get(i).dos.writeUTF("tatsauboluoc");//gui ve de vo hieu hoa nut hitcard voi skipturn
 			dem += mangboluoc[i];
 		}
+		//chi co 1 hoac 2 nguoi bo luot, con nguoi danh
 		if (dem < 3) {
 			for (int i = 1; i < 4; i++) {
 				if (mangboluoc[(this.ordernumber + i) % 4] == 0) {
-					room.players.get((this.ordernumber + i) % 4).dos
+					room.players.get((this.ordernumber + i) % 4).dos //kich hoat nut hitcard
 							.writeUTF("bocbai");
-					room.players.get((this.ordernumber + i) % 4).dos
+					room.players.get((this.ordernumber + i) % 4).dos //kich hoat nut skipturn
 							.writeUTF("anbai");
 					return;
 				}
 			}
-		} else {
+		} 
+		//3 nguoi deu bo luot
+		else {
 			String s = "rac:" + this.nameplayer + "@_";
 			for (int t = 0; t < room.players.size(); t++) {
 				room.players.get(t).dos.writeUTF(s);
